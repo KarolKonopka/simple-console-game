@@ -23,3 +23,7 @@ class Player:
 			self.__direction = 'right'
 	def get_direction(self):
 		return self.__direction
+	def level_up(self):
+		self.__level += 1
+		if self.__level > 9:
+			self.__level = 0
