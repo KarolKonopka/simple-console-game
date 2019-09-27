@@ -13,6 +13,7 @@ class Game:
 		self.__enemy = Enemy(self.__player.get_position(), self.__world_size)
 		self.__floor = ''.join('_' for i in range(self.__world_size))
 		self.__last_world = None
+		self.__last_bullet_time = 0
 	def run(self):
 		while True:
 			if keyboard.is_pressed('q'):
@@ -22,9 +23,12 @@ class Game:
 				self.__player.move('left')
 			elif keyboard.is_pressed('d'):
 				self.__player.move('right')
-			elif keyboard.is_pressed('space'):
-				self.__bullets.append(Bullet(self.__player.get_direction(), self.__player.get_position()))
-			self.__check_collision()
+			if keyboard.is_pressed('space'):
+				if len(self.__bullets) < 3:
+					if self.__last_bullet_time > 2:
+						self.__last_bullet_time = 0
+						self.__bullets.append(Bullet(self.__player.get_direction(), self.__player.get_position()))
+			self.__check_collisions()
 			self.__update_bullets()
 			self.__print_world()
 			time.sleep(0.05)
@@ -42,13 +46,19 @@ class Game:
 			print(world)
 		self.__last_world = world
 	def __update_bullets(self):
+		self.__last_bullet_time += 1
 		for bullet in self.__bullets:
 			bullet.update()
 		self.__bullets = list(filter(lambda bullet: bullet.get_position() >= 0 and bullet.get_position() < self.__world_size, self.__bullets))
-	def __check_collision(self):
+	def __check_collisions(self):
 		for bullet in self.__bullets:
 			if bullet.get_position() == self.__enemy.get_position():
 				self.__player.level_up()
 				bullet.set_destroyed()
 				self.__enemy.kill(self.__player.get_position())
 		self.__bullets = list(filter(lambda bullet: not bullet.is_destroyed(), self.__bullets))
+		if self.__enemy.get_position() == self.__player.get_position():
+			self.__player.kill()
+			self.__enemy.kill(self.__player.get_position())
+
+
