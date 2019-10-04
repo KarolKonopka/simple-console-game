@@ -24,11 +24,12 @@ class Game:
 			elif keyboard.is_pressed('d'):
 				self.__player.move('right')
 			if keyboard.is_pressed('space'):
-				if len(self.__bullets) < 3:
-					if self.__last_bullet_time > 2:
+				if len(self.__bullets) < 4:
+					if self.__last_bullet_time > 1:
 						self.__last_bullet_time = 0
 						self.__bullets.append(Bullet(self.__player.get_direction(), self.__player.get_position()))
 			self.__check_collisions()
+			self.__enemy.move()
 			self.__update_bullets()
 			self.__print_world()
 			time.sleep(0.05)
